@@ -1,0 +1,41 @@
+:root {
+  --bg-color: #7c7c7c;
+  --main-dark: #383838;
+  --main-light: #f0f0f0;
+}
+
+body {
+  margin: 0;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-color);
+}
+
+.canvas {
+  border: 3px solid var(--main-dark);
+  border-radius: 6px;
+  background-color: var(--main-light);
+}
+
+.btn-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.btn {
+  width: 100px;
+  height: 40px;
+  margin-top: 30px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  color: var(--main-light);
+  background-color: var(--main-dark);
+}
