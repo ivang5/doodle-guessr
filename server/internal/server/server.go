@@ -14,13 +14,10 @@ func healthCheck(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprint(w, "doodle-guessr server is running\n")
 }
 
-func Run(addr string) error {
+func Init() {
 	http.HandleFunc("/health_check", healthCheck)
+}
 
-	if err := http.ListenAndServe(addr, nil); err != nil {
-		fmt.Printf("failed to run server on %s\n", addr)
-		return err
-	}
-
-	return nil
+func ListenAndServe(addr string) error {
+	return http.ListenAndServe(addr, nil)
 }

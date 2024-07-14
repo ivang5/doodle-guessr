@@ -10,7 +10,8 @@ func main() {
 	addr := "localhost:6969"
 
 	fmt.Printf("Listening on %s\n", addr)
-	if err := server.Run(addr); err != nil {
+	server.Init()
+	if err := server.ListenAndServe(addr); err != nil {
 		fmt.Printf("failed to run server on %s\n", addr)
 	}
 }
