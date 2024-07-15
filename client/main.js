@@ -7,6 +7,13 @@ const ctx = canvas.getContext("2d");
 let drawing = false;
 let lastPos = { x: 0, y: 0 };
 
+const width = this.innerWidth;
+const height = this.innerHeight;
+const size = Math.min(width, height) * 0.8;
+
+canvas.setAttribute("width", size);
+canvas.setAttribute("height", size);
+
 ctx.lineWidth = 12;
 ctx.lineCap = "round";
 
@@ -44,9 +51,18 @@ btnClr.onclick = () => {
 };
 
 btnSend.onclick = () => {
-  // const dataB64 = canvas.toDataURL("image/png");
-  canvas.toBlob((blob) => {
-    fetch("http://localhost:8080", {
+  const offScreenCanvas = document.createElement("canvas");
+  const offScreenContext = offScreenCanvas.getContext("2d");
+
+  offScreenCanvas.width = 28;
+  offScreenCanvas.height = 28;
+
+  offScreenContext.drawImage(canvas, 0, 0, 28, 28);
+
+  // const dataB64 = offScreenCanvas.toDataURL("image/png");
+
+  offScreenCanvas.toBlob((blob) => {
+    fetch("http://localhost:6969", {
       method: "POST",
       body: blob,
     })
