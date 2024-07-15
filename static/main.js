@@ -89,7 +89,7 @@ const drawDot = (x, y) => {
 };
 
 const makeAGuess = async (pixelArray) => {
-  const response = await fetch("http://localhost:6969", {
+  const response = await fetch("http://localhost:6969/predict", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
