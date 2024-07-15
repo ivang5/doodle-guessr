@@ -52,23 +52,27 @@ btnClr.onclick = () => {
 
 btnSend.onclick = () => {
   const offScreenCanvas = document.createElement("canvas");
-  const offScreenContext = offScreenCanvas.getContext("2d");
+  const offScreenCtx = offScreenCanvas.getContext("2d");
 
   offScreenCanvas.width = 28;
   offScreenCanvas.height = 28;
 
-  offScreenContext.drawImage(canvas, 0, 0, 28, 28);
+  offScreenCtx.drawImage(canvas, 0, 0, 28, 28);
 
-  // const dataB64 = offScreenCanvas.toDataURL("image/png");
+  const imageData = offScreenCtx.getImageData(0, 0, 28, 28);
+  const pixels = imageData.data;
 
-  offScreenCanvas.toBlob((blob) => {
-    fetch("http://localhost:6969", {
-      method: "POST",
-      body: blob,
-    })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-  });
+  const pixelArray = [];
+  for (let y = 0; y < offScreenCanvas.height; y++) {
+    for (let x = 0; x < offScreenCanvas.width; x++) {
+      const index = (y * offScreenCanvas.width + x) * 4;
+      const alpha = pixels[index + 3];
+
+      pixelArray.push(alpha === 0 ? 1 : 0);
+    }
+  }
+
+  makeAGuess(pixelArray);
 };
 
 const drawLine = (x1, y1, x2, y2) => {
@@ -82,4 +86,23 @@ const drawDot = (x, y) => {
   ctx.beginPath();
   ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2, true);
   ctx.fill();
+};
+
+const makeAGuess = async (pixelArray) => {
+  const response = await fetch("http://localhost:6969", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      pixelArray: pixelArray,
+    }),
+  });
+  let data;
+  try {
+    data = await response.json();
+  } catch (err) {
+    data = null;
+  }
+  return { response, data };
 };
