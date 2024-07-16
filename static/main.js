@@ -52,51 +52,13 @@ btnClr.onclick = () => {
 };
 
 btnPrint.onclick = () => {
-  const offScreenCanvas = document.createElement("canvas");
-  const offScreenCtx = offScreenCanvas.getContext("2d");
-
-  offScreenCanvas.width = 28;
-  offScreenCanvas.height = 28;
-
-  offScreenCtx.drawImage(canvas, 0, 0, 28, 28);
-
-  const imageData = offScreenCtx.getImageData(0, 0, 28, 28);
-  const pixels = imageData.data;
-
-  const pixelArray = [];
-  for (let y = 0; y < offScreenCanvas.height; y++) {
-    for (let x = 0; x < offScreenCanvas.width; x++) {
-      const index = (y * offScreenCanvas.width + x) * 4;
-      const alpha = pixels[index + 3];
-
-      pixelArray.push(alpha === 0 ? 1 : 0);
-    }
-  }
+  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
 
   requestPrint(pixelArray);
 };
 
 btnPredict.onclick = () => {
-  const offScreenCanvas = document.createElement("canvas");
-  const offScreenCtx = offScreenCanvas.getContext("2d");
-
-  offScreenCanvas.width = 28;
-  offScreenCanvas.height = 28;
-
-  offScreenCtx.drawImage(canvas, 0, 0, 28, 28);
-
-  const imageData = offScreenCtx.getImageData(0, 0, 28, 28);
-  const pixels = imageData.data;
-
-  const pixelArray = [];
-  for (let y = 0; y < offScreenCanvas.height; y++) {
-    for (let x = 0; x < offScreenCanvas.width; x++) {
-      const index = (y * offScreenCanvas.width + x) * 4;
-      const alpha = pixels[index + 3];
-
-      pixelArray.push(alpha === 0 ? 1 : 0);
-    }
-  }
+  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
 
   requestPredict(pixelArray);
 };
@@ -112,6 +74,33 @@ const drawDot = (x, y) => {
   ctx.beginPath();
   ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2, true);
   ctx.fill();
+};
+
+const getPixelsFromCanvas = (dims) => {
+  const offScreenCanvas = document.createElement("canvas");
+  const offScreenCtx = offScreenCanvas.getContext("2d");
+  const x = dims.x;
+  const y = dims.y;
+
+  offScreenCanvas.width = x;
+  offScreenCanvas.height = y;
+
+  offScreenCtx.drawImage(canvas, 0, 0, x, y);
+
+  const imageData = offScreenCtx.getImageData(0, 0, x, y);
+  const pixels = imageData.data;
+
+  const pixelArray = [];
+  for (let y = 0; y < offScreenCanvas.height; y++) {
+    for (let x = 0; x < offScreenCanvas.width; x++) {
+      const index = (y * offScreenCanvas.width + x) * 4;
+      const alpha = pixels[index + 3];
+
+      pixelArray.push(alpha === 0 ? 1 : 0);
+    }
+  }
+
+  return pixelArray;
 };
 
 const requestPrint = async (pixelArray) => {
