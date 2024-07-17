@@ -1,4 +1,4 @@
-package server
+package router
 
 import (
 	"bytes"
@@ -79,6 +79,7 @@ func Init() {
 	http.HandleFunc("/predict", predictHandler)
 }
 
-func ListenAndServe(addr string) error {
+func Run(addr string) error {
+	fmt.Printf("Listening on %s\n", addr)
 	return http.ListenAndServe(addr, nil)
 }
