@@ -1,30 +1,38 @@
 import os
 import torch
 import torch.nn as nn
-import torchvision 
-from torchvision import transforms 
+import json
+import random
 from torch.utils.data import Subset
-from torch.utils.data import DataLoader
+from torch.utils.data import Dataset, DataLoader
 
-image_path = './'
-transform = transforms.Compose([transforms.ToTensor()])
+f = open('./dataset/everything.json',) 
+data = json.load(f)
+data_list = [(torch.tensor(d['pixels'], dtype=torch.float32).unsqueeze(0), d['id']) for d in data]
+random.shuffle(data_list)
 
-mnist_dataset = torchvision.datasets.MNIST(root=image_path,
-                                           train=True,
-                                           transform=transform,
-                                           download=True)
+train_data, valid_data, test_data = data_list[:40000], data_list[40000:47000], data_list[47000:]
 
-mnist_valid_dataset = Subset(mnist_dataset, torch.arange(10000))
-mnist_train_dataset = Subset(mnist_dataset, torch.arange(10000, len(mnist_dataset)))
-mnist_test_dataset = torchvision.datasets.MNIST(root=image_path,
-                                           train=False,
-                                           transform=transform,
-                                           download=False)
+class DoodleDataset(Dataset):
+    def __init__(self, data_list):
+        self.data_list = data_list
+
+    def __len__(self):
+        return len(self.data_list)
+
+    def __getitem__(self, idx):
+        features, label = self.data_list[idx]
+        return features, label
+
+train_dataset = DoodleDataset(train_data)
+valid_dataset = DoodleDataset(valid_data)
+test_dataset = DoodleDataset(test_data)
 
 batch_size = 64
 torch.manual_seed(1)
-train_dl = DataLoader(mnist_train_dataset, batch_size, shuffle=True)
-valid_dl = DataLoader(mnist_valid_dataset, batch_size, shuffle=False)
+train_dl = DataLoader(train_dataset, batch_size, shuffle=True)
+valid_dl = DataLoader(valid_dataset, batch_size, shuffle=False)
+test_dl = DataLoader(test_dataset, batch_size, shuffle=False)
 
 model = nn.Sequential()
 model.add_module('conv1', nn.Conv2d(in_channels=1, out_channels=32, kernel_size=5, padding=2))
@@ -36,11 +44,11 @@ model.add_module('pool2', nn.MaxPool2d(kernel_size=2))
 
 model.add_module('flatten', nn.Flatten())
 
-model.add_module('fc1', nn.Linear(3136, 1024))
+model.add_module('fc1', nn.Linear(16384, 2048))
 model.add_module('relu3', nn.ReLU())
 model.add_module('dropout', nn.Dropout(p=0.5))
 
-model.add_module('fc2', nn.Linear(1024, 10))
+model.add_module('fc2', nn.Linear(2048, 15))
 
 device = torch.device("cpu")
 
@@ -89,22 +97,29 @@ def train(model, num_epochs, train_dl, valid_dl):
     return loss_hist_train, loss_hist_valid, accuracy_hist_train, accuracy_hist_valid
 
 torch.manual_seed(1)
-num_epochs = 20
+num_epochs = 10
 hist = train(model, num_epochs, train_dl, valid_dl)
-
-pred = model(mnist_test_dataset.data.unsqueeze(1) / 255.)
-is_correct = (torch.argmax(pred, dim=1) == mnist_test_dataset.targets).float()
-print(f'Test accuracy: {is_correct.mean():.4f}') 
 
 if not os.path.exists('models'):
     os.mkdir('models')
 
-path = 'models/mnist-cnn.ph'
+path = 'models/doodle-cnn.ph'
 torch.save(model, path)
 
-# path = 'models/mnist-cnn.ph'
-# model = torch.load(path)
+all_predictions = []
+all_labels = []
 
-# pred = model(mnist_test_dataset.data.unsqueeze(1) / 255.)
-# is_correct = (torch.argmax(pred, dim=1) == mnist_test_dataset.targets).float()
-# print(f'Test accuracy: {is_correct.mean():.4f}')
+for batch in test_dl:
+    features, labels = batch
+    predictions = model(features)
+    all_predictions.append(predictions)
+    all_labels.append(labels)
+
+all_predictions = torch.cat(all_predictions)
+all_labels = torch.cat(all_labels)
+is_correct = (torch.argmax(all_predictions, dim=1) == all_labels).float()
+accuracy = is_correct.mean().item()
+print(f'Accuracy: {accuracy * 100:.2f}%')
+
+# path = 'models/doodle-cnn.ph'
+# model = torch.load(path)

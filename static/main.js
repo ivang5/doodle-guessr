@@ -1,7 +1,8 @@
 const canvas = document.getElementById("canvas");
 const wrapper = document.getElementById("container");
 const btnClr = document.getElementById("btnClear");
-const btnSend = document.getElementById("btnSend");
+const btnPrint = document.getElementById("btnPrint");
+const btnPredict = document.getElementById("btnPredict");
 const ctx = canvas.getContext("2d");
 
 let drawing = false;
@@ -50,29 +51,16 @@ btnClr.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-btnSend.onclick = () => {
-  const offScreenCanvas = document.createElement("canvas");
-  const offScreenCtx = offScreenCanvas.getContext("2d");
+btnPrint.onclick = () => {
+  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
 
-  offScreenCanvas.width = 28;
-  offScreenCanvas.height = 28;
+  requestPrint(pixelArray);
+};
 
-  offScreenCtx.drawImage(canvas, 0, 0, 28, 28);
+btnPredict.onclick = () => {
+  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
 
-  const imageData = offScreenCtx.getImageData(0, 0, 28, 28);
-  const pixels = imageData.data;
-
-  const pixelArray = [];
-  for (let y = 0; y < offScreenCanvas.height; y++) {
-    for (let x = 0; x < offScreenCanvas.width; x++) {
-      const index = (y * offScreenCanvas.width + x) * 4;
-      const alpha = pixels[index + 3];
-
-      pixelArray.push(alpha === 0 ? 1 : 0);
-    }
-  }
-
-  makeAGuess(pixelArray);
+  requestPredict(pixelArray);
 };
 
 const drawLine = (x1, y1, x2, y2) => {
@@ -88,8 +76,54 @@ const drawDot = (x, y) => {
   ctx.fill();
 };
 
-const makeAGuess = async (pixelArray) => {
-  const response = await fetch("http://localhost:6969/predict", {
+const getPixelsFromCanvas = (dims) => {
+  const offScreenCanvas = document.createElement("canvas");
+  const offScreenCtx = offScreenCanvas.getContext("2d");
+  const x = dims.x;
+  const y = dims.y;
+
+  offScreenCanvas.width = x;
+  offScreenCanvas.height = y;
+
+  offScreenCtx.drawImage(canvas, 0, 0, x, y);
+
+  const imageData = offScreenCtx.getImageData(0, 0, x, y);
+  const pixels = imageData.data;
+
+  const pixelArray = [];
+  for (let y = 0; y < offScreenCanvas.height; y++) {
+    for (let x = 0; x < offScreenCanvas.width; x++) {
+      const index = (y * offScreenCanvas.width + x) * 4;
+      const alpha = pixels[index + 3];
+
+      pixelArray.push(alpha === 0 ? 1 : 0);
+    }
+  }
+
+  return pixelArray;
+};
+
+const requestPrint = async (pixelArray) => {
+  const response = await fetch("http://localhost:3000/print", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      pixelArray: pixelArray,
+    }),
+  });
+  let data;
+  try {
+    data = await response.json();
+  } catch (err) {
+    data = null;
+  }
+  return { response, data };
+};
+
+const requestPredict = async (pixelArray) => {
+  const response = await fetch("http://localhost:3000/predict", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
