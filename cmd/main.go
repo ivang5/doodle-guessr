@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	addr := "localhost:6969"
+	addr := "localhost:3000"
 
 	router.Init()
 	if err := router.Run(addr); err != nil {

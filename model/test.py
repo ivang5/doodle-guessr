@@ -1,8 +1,37 @@
-import sys
+import random
 
-if len(sys.argv) > 1:
-    print("Arguments received:")
-    for arg in sys.argv[1:]:
-        print(arg)
-else:
-    print("No arguments received.")
+
+class ConvNet:
+    def __init__(self) -> None:
+        pass
+
+    def save(self, path: str) -> None:
+        pass
+
+    def load(self, path: str) -> None:
+        pass
+
+    def forward(self, X: any) -> any:
+        print(X)
+
+        classes = [
+            "apple",
+            "arm",
+            "axe",
+            "banana",
+            "bed",
+            "bee",
+            "car",
+            "coffee-cup",
+            "cookie",
+            "donut",
+            "door",
+            "ear",
+            "eye",
+            "face",
+            "hand",
+        ]
+
+        rand_idx = random.randint(0, len(classes) - 1)
+
+        return classes[rand_idx]

@@ -7,33 +7,35 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
-	"os/exec"
 )
 
 type PredictionRequest struct {
 	PixelArray []int `json:"pixelArray"`
 }
 
-func runInferCommand(pixelArrayJson string) (string, error) {
-	// modelPath := "model/model.py"
-	modelPath := "model/test.py"
-	if _, err := os.Stat(modelPath); os.IsNotExist(err) {
-		return "", err
+func sendInferRequest(requestBody []byte) ([]byte, error) {
+	url := "http://localhost:3001/infer"
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return nil, err
 	}
 
-	cmd := exec.Command("python3", modelPath, pixelArrayJson)
+	req.Header.Set("Content-Type", "application/json")
 
-	var out bytes.Buffer
-	cmd.Stdout = &out
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
 
-	if err := cmd.Run(); err != nil {
-		return "", err
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
 	}
 
-	result := out.String()
-
-	return result, nil
+	return responseBody, nil
 }
 
 func printPixelsHandler(rw http.ResponseWriter, request *http.Request) {
@@ -54,23 +56,26 @@ func printPixelsHandler(rw http.ResponseWriter, request *http.Request) {
 func predictHandler(rw http.ResponseWriter, request *http.Request) {
 	jsonBody, err := io.ReadAll(request.Body)
 	if err != nil {
-		log.Printf("Error occured in predictHandler: %v\n", err)
+		log.Printf("Error (predictHandler) when reading request body: %v\n", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	jsonString := string(jsonBody)
-
-	output, err := runInferCommand(jsonString)
+	output, err := sendInferRequest(jsonBody)
 	if err != nil {
-		log.Printf("Error occured in predictHandler: %v\n", err)
+		log.Printf("Error (predictHandler) when sending infer request: %v\n", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Println(output)
-
+	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
+	_, err = rw.Write(output)
+	if err != nil {
+		log.Printf("Error (predictHandler) writing response in predictHandler: %v\n", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func Init() {
