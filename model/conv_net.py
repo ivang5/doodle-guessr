@@ -2,7 +2,6 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
-
 class ConvNet(nn.Sequential):
     def __init__(self) -> None:
         super().__init__()
@@ -24,10 +23,12 @@ class ConvNet(nn.Sequential):
         self.add_module("relu3", nn.ReLU())
         self.add_module("dropout", nn.Dropout(p=0.5))
 
-        self.add_module("fc2", nn.Linear(2048, 15))
+        self.add_module("fc2", nn.Linear(2048, 5))
 
-    def forward(self, X):
-        return self(X)
+    def infer(self, X):
+        X = torch.tensor(X).view((1, 1, 64, 64)).float()
+        pred = self(X)
+        return torch.argmax(pred, dim=1).item()
 
     def save(self, path: str) -> None:
         torch.save(self, path)
