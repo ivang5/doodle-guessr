@@ -6,12 +6,21 @@ import random
 from torch.utils.data import Subset
 from torch.utils.data import Dataset, DataLoader
 
-f = open('./dataset/everything.json',) 
+from conv_net import ConvNet
+
+f = open("./dataset/everything.json")
 data = json.load(f)
-data_list = [(torch.tensor(d['pixels'], dtype=torch.float32).unsqueeze(0), d['id']) for d in data]
+data_list = [
+    (torch.tensor(d["pixels"], dtype=torch.float32).unsqueeze(0), d["id"]) for d in data
+]
 random.shuffle(data_list)
 
-train_data, valid_data, test_data = data_list[:40000], data_list[40000:47000], data_list[47000:]
+train_data, valid_data, test_data = (
+    data_list[:40000],
+    data_list[40000:47000],
+    data_list[47000:],
+)
+
 
 class DoodleDataset(Dataset):
     def __init__(self, data_list):
@@ -24,6 +33,7 @@ class DoodleDataset(Dataset):
         features, label = self.data_list[idx]
         return features, label
 
+
 train_dataset = DoodleDataset(train_data)
 valid_dataset = DoodleDataset(valid_data)
 test_dataset = DoodleDataset(test_data)
@@ -34,30 +44,17 @@ train_dl = DataLoader(train_dataset, batch_size, shuffle=True)
 valid_dl = DataLoader(valid_dataset, batch_size, shuffle=False)
 test_dl = DataLoader(test_dataset, batch_size, shuffle=False)
 
-model = nn.Sequential()
-model.add_module('conv1', nn.Conv2d(in_channels=1, out_channels=32, kernel_size=5, padding=2))
-model.add_module('relu1', nn.ReLU())
-model.add_module('pool1', nn.MaxPool2d(kernel_size=2))
-model.add_module('conv2', nn.Conv2d(in_channels=32, out_channels=64, kernel_size=5, padding=2))
-model.add_module('relu2', nn.ReLU())
-model.add_module('pool2', nn.MaxPool2d(kernel_size=2))
-
-model.add_module('flatten', nn.Flatten())
-
-model.add_module('fc1', nn.Linear(16384, 2048))
-model.add_module('relu3', nn.ReLU())
-model.add_module('dropout', nn.Dropout(p=0.5))
-
-model.add_module('fc2', nn.Linear(2048, 15))
+model = ConvNet()
 
 device = torch.device("cpu")
 
 model = model.to(device)
 
-loss_fn = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+loss_fn = torch.nn.CrossEntropyLoss()
 
-def train(model, num_epochs, train_dl, valid_dl):
+
+def train(model: ConvNet, num_epochs, train_dl, valid_dl):
     loss_hist_train = [0] * num_epochs
     accuracy_hist_train = [0] * num_epochs
     loss_hist_valid = [0] * num_epochs
@@ -72,13 +69,13 @@ def train(model, num_epochs, train_dl, valid_dl):
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
-            loss_hist_train[epoch] += loss.item()*y_batch.size(0)
+            loss_hist_train[epoch] += loss.item() * y_batch.size(0)
             is_correct = (torch.argmax(pred, dim=1) == y_batch).float()
             accuracy_hist_train[epoch] += is_correct.sum().cpu()
 
         loss_hist_train[epoch] /= len(train_dl.dataset)
         accuracy_hist_train[epoch] /= len(train_dl.dataset)
-        
+
         model.eval()
         with torch.no_grad():
             for x_batch, y_batch in valid_dl:
@@ -86,24 +83,27 @@ def train(model, num_epochs, train_dl, valid_dl):
                 y_batch = y_batch.to(device)
                 pred = model(x_batch)
                 loss = loss_fn(pred, y_batch)
-                loss_hist_valid[epoch] += loss.item()*y_batch.size(0)
+                loss_hist_valid[epoch] += loss.item() * y_batch.size(0)
                 is_correct = (torch.argmax(pred, dim=1) == y_batch).float()
                 accuracy_hist_valid[epoch] += is_correct.sum().cpu()
 
         loss_hist_valid[epoch] /= len(valid_dl.dataset)
         accuracy_hist_valid[epoch] /= len(valid_dl.dataset)
-        
-        print(f'Epoch {epoch+1} accuracy: {accuracy_hist_train[epoch]:.4f} val_accuracy: {accuracy_hist_valid[epoch]:.4f}')
+
+        print(
+            f"Epoch {epoch+1} accuracy: {accuracy_hist_train[epoch]:.4f} val_accuracy: {accuracy_hist_valid[epoch]:.4f}"
+        )
     return loss_hist_train, loss_hist_valid, accuracy_hist_train, accuracy_hist_valid
+
 
 torch.manual_seed(1)
 num_epochs = 10
 hist = train(model, num_epochs, train_dl, valid_dl)
 
-if not os.path.exists('models'):
-    os.mkdir('models')
+if not os.path.exists("models"):
+    os.mkdir("models")
 
-path = 'models/doodle-cnn.ph'
+path = "models/doodle-cnn.ph"
 torch.save(model, path)
 
 all_predictions = []
@@ -119,7 +119,7 @@ all_predictions = torch.cat(all_predictions)
 all_labels = torch.cat(all_labels)
 is_correct = (torch.argmax(all_predictions, dim=1) == all_labels).float()
 accuracy = is_correct.mean().item()
-print(f'Accuracy: {accuracy * 100:.2f}%')
+print(f"Accuracy: {accuracy * 100:.2f}%")
 
 # path = 'models/doodle-cnn.ph'
 # model = torch.load(path)
