@@ -3,9 +3,7 @@ from conv_net import ConvNet
 
 app = Flask(__name__)
 
-model = ConvNet()
-model.load("models/doodle-cnn.ph")
-model.eval()
+model = ConvNet.load("models/doodle-conv-net.ph")
 
 id_to_class = {
     0: "apple",
@@ -25,14 +23,19 @@ id_to_class = {
     14: "hand",
 }
 
+
 @app.post("/infer")
 def predict():
     data = request.get_json()
     pixel_array = data.get("pixelArray", [])
 
-    pred_id = model.infer(pixel_array)
+    probs, pred_class_id = model.infer(pixel_array)
 
-    return jsonify({"prediction": id_to_class[pred_id]})
+    for p, [k, v] in zip(probs, id_to_class.items()):
+        perc = p * 100
+        print(f"{k}. {v}: {perc:.4f}%")
+
+    return jsonify({"prediction": id_to_class[pred_class_id]})
 
 
 if __name__ == "__main__":

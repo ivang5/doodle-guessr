@@ -2,6 +2,7 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
+
 class ConvNet(nn.Sequential):
     def __init__(self) -> None:
         super().__init__()
@@ -28,10 +29,14 @@ class ConvNet(nn.Sequential):
     def infer(self, X):
         X = torch.tensor(X).view((1, 1, 64, 64)).float()
         pred = self(X)
-        return torch.argmax(pred, dim=1).item()
+        pred_sm = pred[0].softmax(-1).tolist()
+        pred_class_id = torch.argmax(pred, dim=1).item()
+
+        return pred_sm, pred_class_id
 
     def save(self, path: str) -> None:
         torch.save(self, path)
 
-    def load(self, path: str) -> ConvNet:
+    @staticmethod
+    def load(path: str) -> ConvNet:
         return torch.load(path)
