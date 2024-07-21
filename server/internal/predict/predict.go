@@ -13,8 +13,8 @@ type PredictionRequest struct {
 	PixelArray []int `json:"pixelArray"`
 }
 
-func PredictHandler(rw http.ResponseWriter, request *http.Request) {
-	jsonBody, err := io.ReadAll(request.Body)
+func PredictHandler(rw http.ResponseWriter, req *http.Request) {
+	jsonBody, err := io.ReadAll(req.Body)
 	if err != nil {
 		log.Println("Error (PredictHandler) when reading request body")
 		log.Printf("   |_ %v\n", err.Error())
@@ -66,16 +66,16 @@ func sendInferRequest(requestBody []byte) ([]byte, error) {
 	return responseBody, nil
 }
 
-func PrintPixelsHandler(rw http.ResponseWriter, request *http.Request) {
-	var req PredictionRequest
+func PrintHandler(rw http.ResponseWriter, req *http.Request) {
+	var r PredictionRequest
 
-	err := json.NewDecoder(request.Body).Decode(&req)
+	err := json.NewDecoder(req.Body).Decode(&r)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	pixelArray := req.PixelArray
+	pixelArray := r.PixelArray
 	fmt.Println(pixelArray)
 
 	rw.WriteHeader(http.StatusOK)
