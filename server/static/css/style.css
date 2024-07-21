@@ -1,0 +1,26 @@
+@import "./vars.css";
+
+body {
+  margin: 0;
+}
+
+h1 {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 5.75rem;
+  color: var(--main-light);
+}
+
+p {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.1rem;
+  color: var(--main-light);
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-color);
+}

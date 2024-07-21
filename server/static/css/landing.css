@@ -1,0 +1,68 @@
+.container {
+  flex-direction: column;
+  justify-content: start;
+}
+
+.heading {
+  background: linear-gradient(-45deg, var(--gradient));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient 7s ease infinite;
+  margin-top: 10%;
+}
+
+.description {
+  text-align: center;
+  font-size: 1.3rem;
+  max-width: 80%;
+  line-height: 2.4rem;
+  margin-bottom: 6%;
+}
+
+.start-btn {
+  align-items: center;
+  background: linear-gradient(-45deg, var(--gradient));
+  background-size: 200% 200%;
+  animation: gradient 7s ease infinite;
+  border: 0;
+  border-radius: 10px;
+  color: var(--main-light);
+  display: flex;
+  font-size: 2rem;
+  justify-content: center;
+  line-height: 1em;
+  padding: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.start-btn:active,
+.start-btn:hover {
+  outline: 0;
+}
+
+.start-btn span {
+  background-color: var(--btn-bg);
+  padding: 24px 42px;
+  border-radius: 7px;
+  width: 100%;
+  height: 100%;
+  transition: 300ms;
+}
+
+.start-btn:hover span {
+  background-color: var(--btn-bg-opacity);
+}

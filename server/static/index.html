@@ -4,20 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./style.css" />
-    <title>Canvas Test</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/landing.css" />
+    <title>Doodle Guessr</title>
 </head>
 
 <body>
-    <div class="container" id="container">
-        <canvas class="canvas" id="canvas"></canvas>
+    <div class="container">
+        <h1 class="heading">Doodle Guessr</h1>
+        <p class="description">
+            Think fast and draw even faster! In this game, you'll get a word to draw while our AI guesses in real-time.
+            <br>
+            When the AI guesses correctly, you get more time and a new word. <br>Keep going until the clock runs out or
+            you
+            guess all the words correctly. Ready to test your skills?
+        </p>
         <div class="btn-wrapper">
-            <button class="btn" id="btnClear">Clear</button>
-            <button class="btn" id="btnPrint">Print</button>
-            <button class="btn" id="btnPredict">Predict</button>
+            <button class="start-btn"><span class="text">DRAW</span></button>
         </div>
     </div>
 </body>
-<script src="./main.js"></script>
 
 </html>
