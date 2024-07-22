@@ -44,8 +44,6 @@ func (h *Handler) Predict(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp.Prediction)
 }
 
-// TODO: Mire
-// adapt sending request to echo if needed
 func sendInferRequest(requestBody []byte) ([]byte, error) {
 	url := "http://localhost:3001/infer"
 
