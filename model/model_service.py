@@ -27,7 +27,7 @@ id_to_class = {
 @app.post("/infer")
 def predict():
     data = request.get_json()
-    pixel_array = data.get("pixelArray", [])
+    pixel_array = data.get("pixels", [])
 
     probs, pred_class_id = model.infer(pixel_array)
 

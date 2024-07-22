@@ -104,13 +104,13 @@ const getPixelsFromCanvas = (dims) => {
 };
 
 const requestPrint = async (pixelArray) => {
-  const response = await fetch("http://localhost:3000/print", {
+  const response = await fetch("http://localhost:3000/api/print", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      pixelArray: pixelArray,
+      pixels: pixelArray,
     }),
   });
   let data;
@@ -123,13 +123,13 @@ const requestPrint = async (pixelArray) => {
 };
 
 const requestPredict = async (pixelArray) => {
-  const response = await fetch("http://localhost:3000/predict", {
+  const response = await fetch("http://localhost:3000/api/predict", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      pixelArray: pixelArray,
+      pixels: pixelArray,
     }),
   });
   let data;
