@@ -5,6 +5,29 @@ const btnPrint = document.getElementById("btnPrint");
 const btnPredict = document.getElementById("btnPredict");
 const ctx = canvas.getContext("2d");
 
+let ws;
+
+document.addEventListener("DOMContentLoaded", function () {
+  const socketUrl = "ws://localhost:3000/ws";
+  ws = new WebSocket(socketUrl);
+
+  ws.onopen = function (event) {
+    console.log("Connection opened");
+  };
+
+  ws.onmessage = function (event) {
+    console.log("Message received: ", event.data);
+  };
+
+  ws.onerror = function (event) {
+    console.error("WebSocket error observed: ", event);
+  };
+
+  ws.onclose = function (event) {
+    console.log("Connection closed: ", event);
+  };
+});
+
 let drawing = false;
 let lastPos = { x: 0, y: 0 };
 
@@ -24,6 +47,16 @@ canvas.onmousedown = (e) => {
 
   drawDot(currPos.x, currPos.y);
   lastPos = currPos;
+
+  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
+
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      pixels: pixelArray,
+    }));
+  } else {
+    console.error("WebSocket is not open.");
+  }
 };
 
 canvas.onmouseenter = (e) => {
@@ -45,6 +78,16 @@ canvas.onmousemove = (e) => {
 
   drawLine(lastPos.x, lastPos.y, currPos.x, currPos.y);
   lastPos = currPos;
+
+  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
+
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      pixels: pixelArray,
+    }));
+  } else {
+    console.error("WebSocket is not open.");
+  }
 };
 
 btnClr.onclick = () => {

@@ -1,12 +1,33 @@
 package router
 
 import (
+	"github.com/ivang5/doodle-guessr/server/internal/handlers"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
 )
 
-func New() *echo.Echo {
-	e := echo.New()
-	e.Logger.SetLevel(log.DEBUG)
-	return e
+type Router struct {
+	echo *echo.Echo
+}
+
+func New(e *echo.Echo) *Router {
+	return &Router{
+		echo: e,
+	}
+}
+
+func Default(e *echo.Echo) *Router {
+	r := New(e)
+	r.echo.Static("", "./static")
+
+	apiRoute := r.echo.Group("/api")
+	apiRoute.POST("/predict", handlers.Predict)
+	apiRoute.POST("/print", handlers.Print)
+
+	r.echo.GET("/ws", handlers.Connect)
+
+	return r
+}
+
+func (r *Router) Start(addr string) error {
+	return r.echo.Start(addr)
 }

@@ -1,19 +1,18 @@
-package handler
+package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 
+	"github.com/ivang5/doodle-guessr/server/internal/util"
 	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) Predict(c echo.Context) error {
-	var req predictRequest
-	var resp predictResponse
+func Predict(c echo.Context) error {
+	var req util.InferRequest
+	var resp util.InferResponse
 
 	if err := c.Bind(&req); err != nil {
 		log.Println("Error (PredictHandler) when reading request body")
@@ -28,7 +27,7 @@ func (h *Handler) Predict(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	responseBody, err := sendInferRequest(jsonBody)
+	responseBody, err := util.SendInferRequest(jsonBody)
 	if err != nil {
 		log.Println("Error (PredictHandler) when sending infer request")
 		log.Printf("   |_ %v\n", err.Error())
@@ -44,32 +43,7 @@ func (h *Handler) Predict(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp.Prediction)
 }
 
-func sendInferRequest(requestBody []byte) ([]byte, error) {
-	url := "http://localhost:3001/infer"
-
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return responseBody, nil
-}
-
-func (h *Handler) Print(c echo.Context) error {
+func Print(c echo.Context) error {
 	var req predictRequest
 	if err := c.Bind(&req); err != nil {
 		log.Println("Error (PredictHandler) when reading request body")
@@ -80,4 +54,12 @@ func (h *Handler) Print(c echo.Context) error {
 	fmt.Println(req.Pixels)
 
 	return c.NoContent(http.StatusOK)
+}
+
+type predictRequest struct {
+	Pixels []int `json:"pixels"`
+}
+
+type predictResponse struct {
+	Prediction string `json:"prediction"`
 }
