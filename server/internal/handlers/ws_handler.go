@@ -21,5 +21,5 @@ func Connect(c echo.Context) error {
 	client := websockets.NewClient(conn)
 	client.Run()
 
-	return err
+	return nil
 }
