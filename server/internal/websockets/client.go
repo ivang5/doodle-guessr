@@ -23,7 +23,7 @@ type Client struct {
 func NewClient(conn *websocket.Conn) *Client {
 	image := make([]int, IMAGE_SIZE)
 	for i := 0; i < IMAGE_SIZE; i++ {
-		image[i] = 1 // Set each element to 1
+		image[i] = 1
 	}
 
 	return &Client{
@@ -94,6 +94,5 @@ func pixelDiffCount(cachedImage []int, incomingImage []int) int {
 		}
 	}
 
-	log.Println(numDifferent)
 	return numDifferent
 }
