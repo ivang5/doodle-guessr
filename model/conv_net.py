@@ -4,6 +4,7 @@ import torch.nn as nn
 
 
 class ConvNet(nn.Sequential):
+    ### ConvNet class
     def __init__(self) -> None:
         super().__init__()
         self.add_module(

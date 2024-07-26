@@ -44,6 +44,7 @@ train_dl = DataLoader(train_dataset, batch_size, shuffle=True)
 valid_dl = DataLoader(valid_dataset, batch_size, shuffle=False)
 test_dl = DataLoader(test_dataset, batch_size, shuffle=False)
 
+# Load model if exists
 model_path = "models/doodle-conv-net.ph"
 if os.path.exists(model_path):
     model = ConvNet.load(model_path)
