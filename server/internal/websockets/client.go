@@ -9,9 +9,13 @@ import (
 )
 
 const (
-	IMAGE_WIDTH          = 64
-	IMAGE_HEIGHT         = 64
-	IMAGE_SIZE           = IMAGE_WIDTH * IMAGE_HEIGHT
+	IMAGE_WIDTH  = 64
+	IMAGE_HEIGHT = 64
+	IMAGE_SIZE   = IMAGE_WIDTH * IMAGE_HEIGHT
+	///? NOTE: Mirko A.
+	/// If the received image and the last image sent to
+	/// the model differ by at least this many pixels, we
+	/// send the infer request again.
 	IMAGE_DIFF_THRESHOLD = 10
 )
 
@@ -64,7 +68,7 @@ func (c *Client) Run() {
 			continue
 		}
 
-		if pixelDiffCount(c.image, req.Pixels) < IMAGE_DIFF_THRESHOLD {
+		if countDifferentPixels(c.image, req.Pixels) < IMAGE_DIFF_THRESHOLD {
 			continue
 		}
 		c.cacheImage(req.Pixels)
@@ -86,7 +90,7 @@ func (c *Client) cacheImage(image []int) {
 	}
 }
 
-func pixelDiffCount(cachedImage []int, incomingImage []int) int {
+func countDifferentPixels(cachedImage []int, incomingImage []int) int {
 	numDifferent := 0
 	for i := 0; i < IMAGE_SIZE; i += 1 {
 		if cachedImage[i] != incomingImage[i] {
