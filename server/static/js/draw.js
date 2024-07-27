@@ -37,7 +37,6 @@ let word;
 let countdown = 20;
 let interval;
 let correctlyGuessed = false;
-let ws;
 let drawing = false;
 let lastPos = { x: 0, y: 0 };
 
@@ -55,36 +54,6 @@ window.onload = () => {
   startNextStage(true);
 };
 
-document.addEventListener("DOMContentLoaded", function () {
-  const socketUrl = "ws://localhost:3000/ws";
-  ws = new WebSocket(socketUrl);
-
-  ws.onopen = function (event) {
-    console.log("Connection opened");
-  };
-
-  ws.onmessage = function (event) {
-    console.log("Message received: ", event.data);
-    if (
-      JSON.parse(event.data).prediction === word.toLowerCase() &&
-      !correctlyGuessed
-    ) {
-      correctlyGuessed = true;
-      clearInterval(interval);
-      countdown += 5;
-      startNextStage();
-    }
-  };
-
-  ws.onerror = function (event) {
-    console.error("WebSocket error observed: ", event);
-  };
-
-  ws.onclose = function (event) {
-    console.log("Connection closed: ", event);
-  };
-});
-
 canvas.onmousedown = (e) => {
   drawing = true;
   const currPos = { x: e.offsetX, y: e.offsetY };
@@ -92,17 +61,7 @@ canvas.onmousedown = (e) => {
   drawDot(currPos.x, currPos.y);
   lastPos = currPos;
 
-  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
-
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(
-      JSON.stringify({
-        pixels: pixelArray,
-      })
-    );
-  } else {
-    console.error("WebSocket is not open.");
-  }
+  schedulePredictRequest();
 };
 
 canvas.onmouseenter = (e) => {
@@ -124,29 +83,6 @@ canvas.onmousemove = (e) => {
 
   drawLine(lastPos.x, lastPos.y, currPos.x, currPos.y);
   lastPos = currPos;
-
-  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
-  let blackPixels = 0;
-
-  pixelArray.forEach((pixel) => {
-    if (pixel === 0) {
-      blackPixels++;
-    }
-  });
-
-  if (blackPixels < 50) {
-    return;
-  }
-
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(
-      JSON.stringify({
-        pixels: pixelArray,
-      })
-    );
-  } else {
-    console.error("WebSocket is not open.");
-  }
 };
 
 btnClr.onclick = () => {
@@ -245,7 +181,7 @@ const requestPredict = async (pixelArray) => {
   } catch (err) {
     data = null;
   }
-  return { response, data };
+  return data;
 };
 
 const startNextStage = (isFirst = false) => {
@@ -317,4 +253,20 @@ const getRandomIndex = (max) => {
 const setTimerText = () => {
   timer.textContent =
     countdown.toString().length === 2 ? `00:${countdown}` : `00:0${countdown}`;
+};
+
+const schedulePredictRequest = () => {
+  timeout = setTimeout(async () => {
+    const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
+    const data = await requestPredict(pixelArray);
+
+    if (data && data === word.toLowerCase() && !correctlyGuessed) {
+      correctlyGuessed = true;
+      clearInterval(interval);
+      countdown += 5;
+      startNextStage();
+    }
+
+    if (drawing) schedulePredictRequest();
+  }, 500);
 };
