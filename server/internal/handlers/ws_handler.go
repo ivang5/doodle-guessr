@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/gorilla/websocket"
 	"github.com/ivang5/doodle-guessr/server/internal/websockets"
@@ -11,6 +12,8 @@ import (
 var upgrader = websocket.Upgrader{}
 
 func Connect(c echo.Context) error {
+	// FIXME
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
 		log.Println("Error (Connect) when upgrading connection")

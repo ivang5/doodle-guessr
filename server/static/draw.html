@@ -4,18 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/style.css" />
-    <link rel="stylesheet" href="./css/draw.css" />
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/draw.css">
     <title>Doodle Guessr</title>
 </head>
 
 <body>
-    <div class="container" id="container">
-        <canvas class="canvas" id="canvas"></canvas>
-        <div class="btn-wrapper">
-            <button class="btn" id="btnClear">Clear</button>
-            <button class="btn" id="btnPrint">Print</button>
-            <button class="btn" id="btnPredict">Predict</button>
+    <div class="content" id="content">
+        <div class="overlay" id="overlay">
+            <p class="sub-text" id="subText">Get ready to draw</p>
+            <h1 class="word" id="word"></h1>
+            <p class="sub-text" id="timeLeft">You have 20 seconds...</p>
+            <div class="end-game hidden" id="endGame">
+                <p class="score" id="timeScore"></p>
+                <p class="score" id="wordsScore"></p>
+                <div class="start-btn-wrapper">
+                    <button class="start-btn" id="startBtn"><span class="text">PLAY AGAIN</span></button>
+                </div>
+            </div>
+            <div class="overlay-footer overlay-footer--hidden" id="overlayFooter">
+                <p class="timer" id="timer">00:20</p>
+            </div>
+        </div>
+        <div class="container" id="container">
+            <canvas class="canvas" id="canvas"></canvas>
+            <div class="btn-wrapper">
+                <button class="btn" id="btnClear">Clear</button>
+                <button class="btn" id="btnPrint">Print</button>
+                <button class="btn" id="btnPredict">Predict</button>
+            </div>
         </div>
     </div>
 </body>

@@ -1,3 +1,76 @@
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--main-dark);
+  transition: transform 0.5s;
+}
+
+.overlay--hidden {
+  transform: translateY(-92%);
+}
+
+.word {
+  background: linear-gradient(-45deg, var(--gradient));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient 7s ease infinite;
+  margin: 0 0 1rem 0;
+  font-size: 9.75rem;
+}
+
+.word--sm {
+  font-size: 8rem;
+}
+
+.sub-text {
+  font-size: 1.6rem;
+}
+
+.sub-text:first-child {
+  margin: 0;
+}
+
+.overlay-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 8%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+.overlay-footer--hidden {
+  opacity: 0;
+}
+
+.timer {
+  font-size: 1.6rem;
+}
+
+.end-game {
+  text-align: center;
+}
+
+.score {
+  font-size: 1.8rem;
+}
+
+.hidden {
+  display: none;
+}
+
 .canvas {
   border: 3px solid var(--main-dark);
   border-radius: 6px;
@@ -19,4 +92,55 @@
   font-size: 16px;
   color: var(--main-light);
   background-color: var(--main-dark);
+}
+
+.start-btn-wrapper {
+  margin-top: 100px;
+}
+
+.start-btn {
+  align-items: center;
+  background: linear-gradient(-45deg, var(--gradient));
+  background-size: 200% 200%;
+  animation: gradient 7s ease infinite;
+  border: 0;
+  border-radius: 10px;
+  color: var(--main-light);
+  display: flex;
+  font-size: 2rem;
+  justify-content: center;
+  line-height: 1em;
+  padding: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.start-btn:active,
+.start-btn:hover {
+  outline: 0;
+}
+
+.start-btn span {
+  background-color: var(--btn-bg);
+  padding: 24px 42px;
+  border-radius: 7px;
+  width: 100%;
+  height: 100%;
+  transition: 300ms;
+}
+
+.start-btn:hover span {
+  background-color: var(--btn-bg-opacity);
 }
