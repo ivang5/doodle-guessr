@@ -230,6 +230,7 @@ const showFinalScore = () => {
   timeLeft.classList.add("hidden");
   subText.classList.add("hidden");
   overlay.classList.remove("overlay--hidden");
+  drawing = false;
 };
 
 const getRandomIndex = (max) => {
@@ -247,12 +248,12 @@ const schedulePredictRequest = () => {
     const data = await requestPredict(pixelArray);
 
     if (data) {
-      console.log(data)
+      console.log(data);
       pred = data["prediction"];
       certainty = data["certainty"];
 
       if (pred && certainty) {
-        if (pred == word && certainty > .9) {
+        if (pred == word && certainty > 0.9) {
           clearInterval(interval);
           countdown += 5;
           startNextStage();
