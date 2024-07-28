@@ -26,7 +26,7 @@ class ConvNet(nn.Sequential):
 
         self.add_module("fc2", nn.Linear(2048, 5))
 
-    def infer(self, X):
+    def predict(self, X):
         X = torch.tensor(X).view((1, 1, 64, 64)).float()
         pred = self(X)
         pred_sm = pred[0].softmax(-1).tolist()

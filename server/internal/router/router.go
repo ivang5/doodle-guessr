@@ -21,9 +21,6 @@ func Default(e *echo.Echo) *Router {
 
 	apiRoute := r.echo.Group("/api")
 	apiRoute.POST("/predict", handlers.Predict)
-	apiRoute.POST("/print", handlers.Print)
-
-	r.echo.GET("/ws", handlers.Connect)
 
 	return r
 }

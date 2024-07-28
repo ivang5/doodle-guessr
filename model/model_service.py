@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify
+import flask
 from conv_net import ConvNet
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 model = ConvNet.load("models/doodle-conv-net.ph")
 
@@ -24,18 +24,18 @@ id_to_class = {
 }
 
 
-@app.post("/infer")
+@app.post("/predict")
 def predict():
-    data = request.get_json()
+    data = flask.request.get_json()
     pixel_array = data.get("pixels", [])
 
-    probs, pred_class_id = model.infer(pixel_array)
+    probs, pred_class_id = model.predict(pixel_array)
 
     for p, [k, v] in zip(probs, id_to_class.items()):
         perc = p * 100
         print(f"{k}. {v}: {perc:.4f}%")
 
-    return jsonify({"prediction": id_to_class[pred_class_id]})
+    return flask.jsonify({"prediction": id_to_class[pred_class_id]})
 
 
 if __name__ == "__main__":
