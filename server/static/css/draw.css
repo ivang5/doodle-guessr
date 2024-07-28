@@ -16,6 +16,15 @@
   transform: translateY(-92%);
 }
 
+.canvasWrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-color-mute);
+}
+
 .word {
   background: linear-gradient(-45deg, var(--gradient));
   background-clip: text;
@@ -24,6 +33,12 @@
   animation: gradient 7s ease infinite;
   margin: 0 0 1rem 0;
   font-size: 9.75rem;
+}
+
+.wordLabel {
+  background-clip: text;
+  margin: 0 0 1rem 0;
+  font-size: 1.75rem;
 }
 
 .word--sm {
@@ -119,9 +134,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }

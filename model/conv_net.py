@@ -1,6 +1,7 @@
 from __future__ import annotations
 import torch
 import torch.nn as nn
+from torch.types import Number
 
 
 class ConvNet(nn.Sequential):
@@ -26,10 +27,10 @@ class ConvNet(nn.Sequential):
 
         self.add_module("fc2", nn.Linear(2048, 5))
 
-    def predict(self, X):
+    def predict(self, X: torch.Tensor) -> tuple[list[float], Number]:
         X = torch.tensor(X).view((1, 1, 64, 64)).float()
         pred = self(X)
-        pred_sm = pred[0].softmax(-1).tolist()
+        pred_sm: list[float] = pred[0].softmax(-1).tolist()
         pred_class_id = torch.argmax(pred, dim=1).item()
 
         return pred_sm, pred_class_id

@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/ivang5/doodle-guessr/server/internal/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,30 +19,30 @@ func Predict(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		log.Println("Error (Predict) when reading request body")
 		log.Printf("   |_ %v\n", err.Error())
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, utils.ErrorAsMap(err))
 	}
 
 	jsonBody, err := json.Marshal(req)
 	if err != nil {
 		log.Println("Error (Predict) when marshalling request body")
 		log.Printf("   |_ %v\n", err.Error())
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, utils.ErrorAsMap(err))
 	}
 
 	responseBody, err := SendPredictRequest(jsonBody)
 	if err != nil {
 		log.Println("Error (Predict) when sending predict request")
 		log.Printf("   |_ %v\n", err.Error())
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, utils.ErrorAsMap(err))
 	}
 
 	if err = json.Unmarshal(responseBody, &resp); err != nil {
 		log.Println("Error (Predict) when unmarshalling predict response")
 		log.Printf("   |_ %v\n", err.Error())
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, utils.ErrorAsMap(err))
 	}
 
-	return c.JSON(http.StatusOK, resp.Prediction)
+	return c.JSON(http.StatusOK, resp)
 }
 
 func SendPredictRequest(requestBody []byte) ([]byte, error) {
@@ -78,5 +79,6 @@ type PredictRequest struct {
 }
 
 type PredictResponse struct {
-	Prediction string `json:"prediction"`
+	Prediction string  `json:"prediction"`
+	Certainty  float32 `json:"certainty"`
 }

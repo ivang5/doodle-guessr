@@ -35,7 +35,12 @@ def predict():
         perc = p * 100
         print(f"{k}. {v}: {perc:.4f}%")
 
-    return flask.jsonify({"prediction": id_to_class[pred_class_id]})
+    return flask.jsonify(
+        {
+            "prediction": id_to_class[pred_class_id],
+            "certainty": probs[pred_class_id],
+        }
+    )
 
 
 if __name__ == "__main__":

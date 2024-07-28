@@ -7,36 +7,34 @@ const timer = document.getElementById("timer");
 const endGame = document.getElementById("endGame");
 const timeScore = document.getElementById("timeScore");
 const wordsScore = document.getElementById("wordsScore");
+const wordLabel = document.getElementById("wordLabel");
 const btnPlayAgain = document.getElementById("startBtn");
 const canvas = document.getElementById("canvas");
 const wrapper = document.getElementById("container");
 const btnClr = document.getElementById("btnClear");
-const btnPrint = document.getElementById("btnPrint");
-const btnPredict = document.getElementById("btnPredict");
 const ctx = canvas.getContext("2d");
 
 let words = [
-  "Apple",
-  "Arm",
-  "Axe",
-  "Banana",
-  "Bed",
-  // "Bee",
-  // "Car",
-  // "Coffee cup",
-  // "Cookie",
-  // "Donut",
-  // "Door",
-  // "Ear",
-  // "Eye",
-  // "Face",
-  // "Hand",
+  "apple",
+  "arm",
+  "axe",
+  "banana",
+  "bed",
+  // "bee",
+  // "car",
+  // "coffee cup",
+  // "cookie",
+  // "donut",
+  // "door",
+  // "ear",
+  // "eye",
+  // "face",
+  // "hand",
 ];
 let wordsCopy;
 let word;
 let countdown = 20;
 let interval;
-let correctlyGuessed = false;
 let drawing = false;
 let lastPos = { x: 0, y: 0 };
 
@@ -87,18 +85,6 @@ canvas.onmousemove = (e) => {
 
 btnClr.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-};
-
-btnPrint.onclick = () => {
-  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
-
-  requestPrint(pixelArray);
-};
-
-btnPredict.onclick = () => {
-  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
-
-  requestPredict(pixelArray);
 };
 
 btnPlayAgain.onclick = () => {
@@ -206,7 +192,6 @@ const startNextStage = (isFirst = false) => {
     overlayFooter.classList.add("overlay-footer--hidden");
     timeLeft.textContent = `You have ${countdown} seconds left...`;
     overlay.classList.remove("overlay--hidden");
-    correctlyGuessed = false;
   } else {
     timeLeft.textContent = "You have 20 seconds...";
     timeLeft.classList.remove("hidden");
@@ -218,6 +203,7 @@ const startNextStage = (isFirst = false) => {
     overlay.classList.add("overlay--hidden");
   }, 3000);
 
+  wordLabel.textContent = word;
   setTimeout(() => {
     overlayFooter.classList.remove("overlay-footer--hidden");
     interval = setInterval(() => {
@@ -260,11 +246,22 @@ const schedulePredictRequest = () => {
     const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
     const data = await requestPredict(pixelArray);
 
-    if (data && data === word.toLowerCase() && !correctlyGuessed) {
-      correctlyGuessed = true;
-      clearInterval(interval);
-      countdown += 5;
-      startNextStage();
+    if (data) {
+      console.log(data)
+      pred = data["prediction"];
+      certainty = data["certainty"];
+
+      if (pred && certainty) {
+        if (pred == word && certainty > .9) {
+          clearInterval(interval);
+          countdown += 5;
+          startNextStage();
+        }
+      } else {
+        console.log("error: pred or certainty is undefined");
+      }
+    } else {
+      console.log("error: data is undefined");
     }
 
     if (drawing) schedulePredictRequest();
