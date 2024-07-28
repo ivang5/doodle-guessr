@@ -33,6 +33,7 @@
   animation: gradient 7s ease infinite;
   margin: 0 0 1rem 0;
   font-size: 9.75rem;
+  user-select: none;
 }
 
 .wordLabel {
@@ -47,6 +48,7 @@
 
 .sub-text {
   font-size: 1.6rem;
+  user-select: none;
 }
 
 .sub-text:first-child {
@@ -72,6 +74,7 @@
 
 .timer {
   font-size: 1.6rem;
+  user-select: none;
 }
 
 .end-game {
