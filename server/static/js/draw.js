@@ -31,6 +31,9 @@ let words = [
   // "face",
   // "hand",
 ];
+const timeBetweenAttempts = 500;
+
+let lastAttemptTime = Date.now();
 let wordsCopy;
 let word;
 let countdown = 20;
@@ -58,8 +61,6 @@ canvas.onmousedown = (e) => {
 
   drawDot(currPos.x, currPos.y);
   lastPos = currPos;
-
-  schedulePredictRequest();
 };
 
 canvas.onmouseenter = (e) => {
@@ -81,6 +82,12 @@ canvas.onmousemove = (e) => {
 
   drawLine(lastPos.x, lastPos.y, currPos.x, currPos.y);
   lastPos = currPos;
+
+  let now = Date.now();
+  if ((now - lastAttemptTime) > timeBetweenAttempts) {
+    lastAttemptTime = now;
+    attemptPrediction();
+  }
 };
 
 btnClr.onclick = () => {
@@ -132,25 +139,6 @@ const getPixelsFromCanvas = (dims) => {
   return pixelArray;
 };
 
-const requestPrint = async (pixelArray) => {
-  const response = await fetch("http://localhost:3000/api/print", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      pixels: pixelArray,
-    }),
-  });
-  let data;
-  try {
-    data = await response.json();
-  } catch (err) {
-    data = null;
-  }
-  return { response, data };
-};
-
 const requestPredict = async (pixelArray) => {
   const response = await fetch("http://localhost:3000/api/predict", {
     method: "POST",
@@ -161,12 +149,14 @@ const requestPredict = async (pixelArray) => {
       pixels: pixelArray,
     }),
   });
-  let data;
+
+  let data = null;
   try {
     data = await response.json();
   } catch (err) {
-    data = null;
+    console.log(err);
   }
+
   return data;
 };
 
@@ -177,14 +167,9 @@ const startNextStage = (isFirst = false) => {
     chosenWord.classList.remove("word--sm");
   }
 
-  if (wordsCopy.length === 0) {
-    return showFinalScore();
-  }
-
   const wordIndex = getRandomIndex(wordsCopy.length - 1);
   word = wordsCopy.splice(wordIndex, 1)[0];
   chosenWord.textContent = word;
-  drawing = false;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   setTimerText();
 
@@ -230,7 +215,6 @@ const showFinalScore = () => {
   timeLeft.classList.add("hidden");
   subText.classList.add("hidden");
   overlay.classList.remove("overlay--hidden");
-  drawing = false;
 };
 
 const getRandomIndex = (max) => {
@@ -242,29 +226,34 @@ const setTimerText = () => {
     countdown.toString().length === 2 ? `00:${countdown}` : `00:0${countdown}`;
 };
 
-const schedulePredictRequest = () => {
-  timeout = setTimeout(async () => {
-    const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
-    const data = await requestPredict(pixelArray);
+const attemptPrediction = async () => {
+  const pixelArray = getPixelsFromCanvas({ x: 64, y: 64 });
+  const data = await requestPredict(pixelArray);
 
-    if (data) {
-      console.log(data);
-      pred = data["prediction"];
-      certainty = data["certainty"];
+  if (data === null) {
+    console.log("error: data is null");
+    return;
+  }
 
-      if (pred && certainty) {
-        if (pred == word && certainty > 0.9) {
-          clearInterval(interval);
-          countdown += 5;
-          startNextStage();
-        }
-      } else {
-        console.log("error: pred or certainty is undefined");
-      }
+  console.log(data);
+  pred = data["prediction"] || null;
+  certainty = data["certainty"] || null;
+
+  if (pred === null || certainty === null) {
+    console.log("error: pred or certainty field is missing from response");
+    return;
+  }
+
+  if (pred === word && certainty >= 0.9) {
+    clearInterval(interval);
+
+    drawing = false;
+    countdown += 5;
+
+    if (wordsCopy.length === 0) {
+      showFinalScore();
     } else {
-      console.log("error: data is undefined");
+      startNextStage();
     }
-
-    if (drawing) schedulePredictRequest();
-  }, 500);
+  }
 };
