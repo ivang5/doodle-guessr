@@ -16,10 +16,11 @@
   transform: translateY(-92%);
 }
 
-.canvasWrapper {
+.canvas-wrapper {
   width: 100vw;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: var(--bg-color-mute);
@@ -33,17 +34,21 @@
   animation: gradient 7s ease infinite;
   margin: 0 0 1rem 0;
   font-size: 9.75rem;
+  text-transform: uppercase;
   user-select: none;
 }
 
-.wordLabel {
+.word-label {
   background-clip: text;
-  margin: 0 0 1rem 0;
-  font-size: 1.75rem;
+  margin: 3rem 0 1rem 0;
+  font-size: 4rem;
+  text-transform: uppercase;
+  user-select: none;
 }
 
 .word--sm {
   font-size: 8rem;
+  margin-bottom: 3rem;
 }
 
 .sub-text {
@@ -78,19 +83,33 @@
 }
 
 .end-game {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .score {
   font-size: 1.8rem;
+  margin: 0.8rem 0;
 }
 
 .hidden {
   display: none;
 }
 
+.canvas-bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 598px;
+  width: 598px;
+  border-radius: 6px;
+  background: linear-gradient(-45deg, var(--gradient));
+  background-size: 200% 200%;
+  animation: gradient 7s ease infinite;
+}
+
 .canvas {
-  border: 3px solid var(--main-dark);
   border-radius: 6px;
   background-color: var(--main-light);
 }
@@ -102,13 +121,19 @@
 }
 
 .btn {
-  width: 100px;
-  height: 40px;
-  margin-top: 30px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
+  width: 120px;
+  height: 60px;
+  margin-top: 1rem;
+  border: 4px solid var(--main-dark);
+  border-radius: 12px;
+  font-size: 1.4rem;
   color: var(--main-light);
+  background-color: var(--main-dark-opacity);
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.btn:hover {
   background-color: var(--main-dark);
 }
 

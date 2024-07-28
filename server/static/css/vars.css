@@ -2,6 +2,7 @@
   --bg-color: #10111a;
   --bg-color-mute: #333333;
   --main-dark: #202020;
+  --main-dark-opacity: rgb(32, 32, 32, 0.4);
   --main-light: #f0f0f0;
   --gradient: #f85967, #af40ff, #5b42f3, #17a6e9;
   --btn-bg: #0b0b31;

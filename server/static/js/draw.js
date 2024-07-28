@@ -40,7 +40,7 @@ let lastPos = { x: 0, y: 0 };
 
 const width = this.innerWidth;
 const height = this.innerHeight;
-const size = Math.min(width, height) * 0.7;
+const size = Math.min(width, height) * 0.65;
 
 canvas.setAttribute("width", size);
 canvas.setAttribute("height", size);
