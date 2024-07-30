@@ -20,7 +20,11 @@ func Default(e *echo.Echo) *Router {
 	r.echo.Static("", "./static")
 
 	apiRoute := r.echo.Group("/api")
+
 	apiRoute.POST("/predict", handlers.Predict)
+
+	apiRoute.GET("/highscore", handlers.ReadHighscores)
+	apiRoute.POST("/highscore", handlers.SetHighscore)
 
 	return r
 }
