@@ -24,48 +24,43 @@ func SetHighscore(c echo.Context) error {
 		Score: req.Score,
 	}
 
-	exists, err := services.NameExistsInLeaderboard(highscore.Name)
+	highscore, err := services.AddHighscoreToLeaderboard(highscore)
 	if err != nil {
-		log.Println("Error (SetHighscore) when checking for name in leaderboard")
+		log.Println("Error (SetHighscore) when adding highscore to leaderboard")
 		log.Printf("   |_ %v\n", err.Error())
 		return c.JSON(http.StatusInternalServerError, utils.ErrorAsMap(err))
 	}
 
-	if exists {
-		err := services.UpdateHighscoreInLeaderboard(highscore)
-		if err != nil {
-			log.Println("Error (SetHighscore) when updating highscore in leaderboard")
-			log.Printf("   |_ %v\n", err.Error())
-			return c.JSON(http.StatusInternalServerError, utils.ErrorAsMap(err))
-		}
-
-		resp := UpdateHighscoreResponse{
-			Name:  highscore.Name,
-			Score: highscore.Score,
-		}
-
-		return c.JSON(http.StatusOK, resp)
-	} else {
-		highscore, err := services.AddHighscoreToLeaderboard(highscore)
-
-		if err != nil {
-			log.Println("Error (SetHighscore) when adding highscore to leaderboard")
-			log.Printf("   |_ %v\n", err.Error())
-			return c.JSON(http.StatusInternalServerError, utils.ErrorAsMap(err))
-		}
-
-		resp := InsertHighscoreResponse{
-			Id:    int(highscore.Id),
-			Name:  highscore.Name,
-			Score: highscore.Score,
-		}
-
-		return c.JSON(http.StatusOK, resp)
+	resp := InsertHighscoreResponse{
+		Id:    int(highscore.Id),
+		Name:  highscore.Name,
+		Score: highscore.Score,
 	}
+
+	return c.JSON(http.StatusOK, resp)
 }
 
 func ReadHighscores(c echo.Context) error {
-	return nil
+	highscores, err := services.ReadHighscoresFromLeaderboard()
+	if err != nil {
+		log.Println("Error (ReadHighscores) when reading highscores from leaderboard")
+		log.Printf("   |_ %v\n", err.Error())
+		return c.JSON(http.StatusInternalServerError, utils.ErrorAsMap(err))
+	}
+
+	var respHighscores []Highscore
+	for _, highscore := range highscores {
+		respHighscores = append(respHighscores, Highscore{
+			Name:  highscore.Name,
+			Score: highscore.Score,
+		})
+	}
+
+	resp := ReadHighscoresResponse{
+		Highscores: respHighscores,
+	}
+
+	return c.JSON(http.StatusOK, resp)
 }
 
 type SetHighscoreRequest struct {
@@ -79,7 +74,11 @@ type InsertHighscoreResponse struct {
 	Score int    `json:"score"`
 }
 
-type UpdateHighscoreResponse struct {
+type Highscore struct {
 	Name  string `json:"name"`
 	Score int    `json:"score"`
+}
+
+type ReadHighscoresResponse struct {
+	Highscores []Highscore `json:"highscores"`
 }

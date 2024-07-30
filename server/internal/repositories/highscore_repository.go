@@ -20,36 +20,6 @@ func InsertHighscore(highscore models.Highscore) (models.Highscore, error) {
 	return highscore, nil
 }
 
-func UpdateHighscore(highscore models.Highscore) error {
-	query := "UPDATE highscores SET score = $1 WHERE name = $2"
-
-	result, err := db.DB().Exec(query, highscore.Score, highscore.Name)
-	if err != nil {
-		log.Println("Error (UpdateHighscore) when executing query")
-		log.Printf("   |_ %v\n", err.Error())
-		return err
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		log.Println("Error (UpdateHighscore) when getting rows affected")
-		log.Printf("   |_ %v\n", err.Error())
-		return err
-	}
-
-	if rowsAffected == 0 {
-		log.Println("Error (UpdateHighscore) checking affected rows")
-		log.Print("   |_ no rows were affected\n")
-		log.Fatal("TERMINATED")
-	} else if rowsAffected > 1 {
-		log.Println("Error (UpdateHighscore) checking affected rows")
-		log.Printf("   |_ rows affected: %v, expected: 1\n", rowsAffected)
-		log.Fatal("TERMINATED")
-	}
-
-	return nil
-}
-
 func ReadHighscores() ([]models.Highscore, error) {
 	query := "SELECT * FROM highscores"
 
