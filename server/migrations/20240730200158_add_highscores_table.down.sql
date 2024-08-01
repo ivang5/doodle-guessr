@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS highscores;
+DROP TABLE IF EXISTS leaderboard;

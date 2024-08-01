@@ -23,8 +23,8 @@ func Default(e *echo.Echo) *Router {
 
 	apiRoute.POST("/predict", handlers.Predict)
 
-	apiRoute.GET("/highscore", handlers.ReadHighscores)
-	apiRoute.POST("/highscore", handlers.SetHighscore)
+	apiRoute.POST("/scores", handlers.SetScore)
+	apiRoute.GET("/scores", handlers.ReadScores)
 
 	return r
 }
