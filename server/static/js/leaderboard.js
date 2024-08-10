@@ -4,13 +4,15 @@ window.onload = async () => {
   const scores = await getLeaderboard();
 
   if (scores) {
-    scores.scores.forEach((score) => {
+    scores.scores.forEach((score, index) => {
       const leaderboardItem = document.createElement("li");
       const itemName = document.createElement("span");
       const itemScore = document.createElement("span");
 
       leaderboardItem.className = "list-item";
-      itemName.appendChild(document.createTextNode(score.name));
+      itemName.appendChild(
+        document.createTextNode(`${index + 1}. ${score.name}`)
+      );
       itemScore.appendChild(document.createTextNode(score.points));
       leaderboardItem.appendChild(itemName);
       leaderboardItem.appendChild(itemScore);
