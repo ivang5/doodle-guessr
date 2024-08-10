@@ -1,6 +1,6 @@
 .container {
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
 }
 
 .heading {
@@ -9,21 +9,28 @@
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
   animation: gradient 7s ease infinite;
-  margin-top: 10%;
+  margin-top: 4rem;
+  margin-bottom: 0;
 }
 
-.description {
-  text-align: center;
-  font-size: 1rem;
-  max-width: 80%;
-  line-height: 1.6rem;
-  margin-bottom: 2rem;
+.list {
+  list-style: none;
+  padding: 2rem 0;
+  margin: 0;
 }
 
-.btn-wrapper {
+.list-item {
+  font-size: 1.2rem;
+  color: var(--main-light);
+  margin-bottom: 1rem;
+  width: 20rem;
   display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
+  justify-content: space-between;
+}
+
+.list-item:first-child {
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .start-btn {
@@ -75,10 +82,14 @@
 }
 
 @media screen and (min-width: 768px) {
-  .description {
-    font-size: 1.1rem;
-    line-height: 1.8rem;
-    margin-bottom: 3rem;
+  .list-item {
+    font-size: 1.4rem;
+    margin-bottom: 1.1rem;
+    width: 28rem;
+  }
+
+  .list-item:first-child {
+    font-size: 2.4rem;
   }
 
   .start-btn {
@@ -91,39 +102,11 @@
 }
 
 @media screen and (min-width: 992px) {
-  .container {
-    justify-content: start;
-  }
-
-  .description {
-    font-size: 1.3rem;
-    line-height: 2rem;
-    margin-bottom: 4rem;
-  }
-
-  .btn-wrapper {
-    gap: 2rem;
-  }
-
   .start-btn {
     font-size: 1.6rem;
   }
 
   .start-btn span {
     padding: 1.2rem 2rem;
-  }
-}
-
-@media screen and (min-width: 1200px) {
-  .heading {
-    margin-top: 7.5rem;
-  }
-
-  .description {
-    line-height: 2.4rem;
-  }
-
-  .btn-wrapper {
-    gap: 3rem;
   }
 }

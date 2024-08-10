@@ -84,7 +84,7 @@ canvas.onmousemove = (e) => {
   lastPos = currPos;
 
   let now = Date.now();
-  if ((now - lastAttemptTime) > timeBetweenAttempts) {
+  if (now - lastAttemptTime > timeBetweenAttempts) {
     lastAttemptTime = now;
     attemptPrediction();
   }
