@@ -1,6 +1,6 @@
 .container {
   flex-direction: column;
-  justify-content: start;
+  justify-content: center;
 }
 
 .heading {
@@ -14,9 +14,9 @@
 
 .description {
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1rem;
   max-width: 80%;
-  line-height: 2.4rem;
+  line-height: 1.6rem;
   margin-bottom: 6%;
 }
 
@@ -29,7 +29,7 @@
   border-radius: 10px;
   color: var(--main-light);
   display: flex;
-  font-size: 2rem;
+  font-size: 1.2rem;
   justify-content: center;
   line-height: 1em;
   padding: 5px;
@@ -56,7 +56,7 @@
 
 .start-btn span {
   background-color: var(--btn-bg);
-  padding: 24px 42px;
+  padding: 0.6rem 1rem;
   border-radius: 7px;
   width: 100%;
   height: 100%;
@@ -65,4 +65,52 @@
 
 .start-btn:hover span {
   background-color: var(--btn-bg-opacity);
+}
+
+@media screen and (min-width: 768px) {
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.8rem;
+  }
+
+  .start-btn {
+    font-size: 1.4rem;
+  }
+
+  .start-btn span {
+    padding: 0.8rem 1.6rem;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .container {
+    justify-content: start;
+  }
+
+  .description {
+    font-size: 1.3rem;
+    line-height: 2rem;
+  }
+
+  .start-btn {
+    font-size: 1.6rem;
+  }
+
+  .start-btn span {
+    padding: 1.2rem 2rem;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .description {
+    line-height: 2.4rem;
+  }
+
+  .start-btn {
+    font-size: 2rem;
+  }
+
+  .start-btn span {
+    padding: 1.5rem 2.6rem;
+  }
 }
