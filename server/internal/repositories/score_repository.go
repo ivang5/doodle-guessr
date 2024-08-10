@@ -21,7 +21,7 @@ func InsertScore(score models.Score) (models.Score, error) {
 }
 
 func ReadScores() ([]models.Score, error) {
-	query := "SELECT * FROM leaderboard ORDER BY Points DESC"
+	query := "SELECT * FROM leaderboard ORDER BY Points DESC LIMIT 10"
 
 	rows, err := db.DB().Query(query)
 	if err != nil {
