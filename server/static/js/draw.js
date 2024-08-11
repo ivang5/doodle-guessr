@@ -1,3 +1,7 @@
+const modal = document.getElementById("modalWrapper");
+const modalInput = document.getElementById("modalInput");
+const modalInputError = document.getElementById("modalInputError");
+const modalBtn = document.getElementById("modalBtn");
 const overlay = document.getElementById("overlay");
 const overlayFooter = document.getElementById("overlayFooter");
 const chosenWord = document.getElementById("word");
@@ -7,6 +11,7 @@ const timer = document.getElementById("timer");
 const endGame = document.getElementById("endGame");
 const timeScore = document.getElementById("timeScore");
 const wordsScore = document.getElementById("wordsScore");
+const finalScore = document.getElementById("finalScore");
 const wordLabel = document.getElementById("wordLabel");
 const btnPlayAgain = document.getElementById("startBtn");
 const canvas = document.getElementById("canvas");
@@ -36,6 +41,7 @@ const timeBetweenAttempts = 500;
 let lastAttemptTime = Date.now();
 let wordsCopy;
 let word;
+let successfulWords = 0;
 let countdown = 20;
 let interval;
 let drawing = false;
@@ -97,6 +103,18 @@ btnClr.onclick = () => {
 btnPlayAgain.onclick = () => {
   countdown = 20;
   startNextStage(true);
+};
+
+modalBtn.onclick = () => {
+  const name = modalInput.value;
+
+  if (name.length < 2 || name.length > 16) {
+    modalInputError.classList.remove("hidden");
+  } else {
+    addNewScore(name, countdown + successfulWords);
+    modalInputError.classList.add("hidden");
+    modal.classList.add("hidden");
+  }
 };
 
 const drawLine = (x1, y1, x2, y2) => {
@@ -163,7 +181,6 @@ const requestPredict = async (pixelArray) => {
 const startNextStage = (isFirst = false) => {
   if (isFirst) {
     wordsCopy = [...words];
-    console.log(wordsCopy);
     chosenWord.classList.remove("word--sm");
   }
 
@@ -203,18 +220,38 @@ const startNextStage = (isFirst = false) => {
   }, 3500);
 };
 
-const showFinalScore = () => {
+const showFinalScore = async () => {
   overlayFooter.classList.add("overlay-footer--hidden");
   endGame.classList.remove("hidden");
   chosenWord.textContent = "Game over";
   chosenWord.classList.add("word--sm");
   timeScore.textContent = `Time left: ${countdown} seconds`;
-  const successfulWords =
-    wordsCopy.length === 0 ? words.length : words.length - wordsCopy.length;
+  successfulWords =
+    wordsCopy.length === 0 ? words.length : words.length - wordsCopy.length - 1;
   wordsScore.textContent = `Successful words: ${successfulWords}`;
+  const finalSc = countdown + successfulWords;
+  finalScore.textContent = `Final score: ${finalSc}`;
   timeLeft.classList.add("hidden");
   subText.classList.add("hidden");
   overlay.classList.remove("overlay--hidden");
+
+  const scores = await getLeaderboard();
+
+  if (!scores) return;
+
+  let leaderboard = scores.scores;
+  let lastPlace;
+
+  if (leaderboard) {
+    lastPlace = leaderboard[leaderboard.length - 1].points;
+  }
+
+  if (
+    finalSc > 0 &&
+    (!leaderboard || leaderboard.length < 10 || lastPlace < finalSc)
+  ) {
+    modal.classList.remove("hidden");
+  }
 };
 
 const getRandomIndex = (max) => {
@@ -256,4 +293,41 @@ const attemptPrediction = async () => {
       startNextStage();
     }
   }
+};
+
+const getLeaderboard = async () => {
+  const response = await fetch("http://localhost:3000/api/scores", {
+    method: "GET",
+  });
+
+  let data = null;
+  try {
+    data = await response.json();
+  } catch (err) {
+    console.log(err);
+  }
+
+  return data;
+};
+
+const addNewScore = async (name, score) => {
+  const response = await fetch("http://localhost:3000/api/scores", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: name,
+      points: score,
+    }),
+  });
+
+  let data = null;
+  try {
+    data = await response.json();
+  } catch (err) {
+    console.log(err);
+  }
+
+  return data;
 };

@@ -1,3 +1,55 @@
+.modal-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bg-color-mute);
+  padding: 3rem 2.6rem;
+  border-radius: 5px;
+}
+
+.modal-title {
+  font-size: 2.2rem;
+  margin: 1rem 0;
+}
+
+.modal-text {
+  font-size: 1rem;
+}
+
+.modal-input-wrapper {
+  margin-bottom: 1.4rem;
+}
+
+.modal-input {
+  width: 14rem;
+  padding: 0.5rem 0.2rem;
+}
+
+.modal-input-error {
+  margin: 0.3rem 0 0;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+.modal-input:focus-visible {
+  outline: none;
+  border: 2px solid var(--main-dark);
+  border-radius: 2px;
+}
+
 .overlay {
   position: absolute;
   top: 0;
@@ -194,6 +246,32 @@
 }
 
 @media screen and (min-width: 768px) {
+  .modal {
+    padding: 4rem;
+  }
+
+  .modal-title {
+    font-size: 2.6rem;
+  }
+
+  .modal-text {
+    font-size: 1.2rem;
+  }
+
+  .modal-input-wrapper {
+    margin-bottom: 2.4rem;
+  }
+
+  .modal-input {
+    width: 16rem;
+    padding: 0.8rem 0.5rem;
+    font-size: 1rem;
+  }
+
+  .modal-input-error {
+    font-size: 0.9rem;
+  }
+
   .word {
     font-size: 5.6rem;
   }
@@ -241,6 +319,22 @@
 }
 
 @media screen and (min-width: 992px) {
+  .modal {
+    padding: 5rem;
+  }
+
+  .modal-title {
+    font-size: 2.8rem;
+  }
+
+  .modal-input-wrapper {
+    margin-bottom: 3rem;
+  }
+
+  .modal-input {
+    font-size: 1.1rem;
+  }
+
   .word {
     font-size: 7rem;
   }
@@ -285,6 +379,22 @@
 }
 
 @media screen and (min-width: 1200px) {
+  .modal-title {
+    font-size: 3.6rem;
+  }
+
+  .modal-text {
+    font-size: 1.4rem;
+  }
+
+  .modal-input-wrapper {
+    margin-bottom: 4rem;
+  }
+
+  .modal-input {
+    font-size: 1.2rem;
+  }
+
   .word {
     font-size: 9rem;
   }
